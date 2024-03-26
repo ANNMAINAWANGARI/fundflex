@@ -40,41 +40,41 @@ const page:React.FC<pageProps> = () => {
         </div>
         <div className='mt-10 '>
             <h1 className='font-bold text-2xl'>Latest Transactions</h1>
-            <table className='w-full border-collapse border border-slate-500 bg-white mt-10'>
-                <thead className=''>
+            <table className='w-full bg-white mt-10 border-gray-200 border-b-2'>
+                <thead className='text-black'>
                     <tr className='p-4'>
-                        <th className='border border-slate-600 p-4'>Address</th>
-                        <th className='border border-slate-600 p-4'>From/To</th>
-                        <th className='border border-slate-600 p-4'>Amount</th>
-                        <th className='border border-slate-600 p-4'>Status</th>
+                        <th className='p-3 text-sm font-semibold tracking-wide text-left'>Address</th>
+                        <th className='p-3 text-sm font-semibold tracking-wide text-left'>From/To</th>
+                        <th className='p-3 text-sm font-semibold tracking-wide text-left'>Amount</th>
+                        <th className='p-3 text-sm font-semibold tracking-wide text-left'>Status</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody >
                     <tr>
-                        <td className='border border-slate-700 text-center'>0x098tghj7675rtghk</td>
-                        <td className='border border-slate-700 text-center'>
+                        <td className='p-3 text-sm text-gray-700'>0x098tghj7675rtghk</td>
+                        <td className='p-3 text-sm text-gray-700'>
                             <div className='flex flex-col'>
                                 <p>From: 0x047fghiyut4rywhg</p>
                                 <p>To: 0x047fghiyut4rywhg</p>
                             </div>
                         </td>
-                        <td className='border border-slate-700 text-center'>
+                        <td className='p-3 text-sm text-gray-700'>
                             <button className='border border-black'>0.5eth</button>
                         </td>
-                        <td className='border border-slate-700 text-center'>
+                        <td className='p-3 text-sm text-gray-700'>
                             <p className='bg-green-600 p-2 '>Created</p>
                         </td>
                     </tr>
                     <tr>
-                        <td className='border border-slate-700'>0x098tghj7675rtghk</td>
-                        <td className='border border-slate-700'>
+                        <td className='p-3 text-sm text-gray-700'>0x098tghj7675rtghk</td>
+                        <td className='p-3 text-sm text-gray-700'>
                             <div className='flex flex-col'>
                                 <p>From: 0x047fghiyut4rywhg</p>
                                 <p>To: 0x047fghiyut4rywhg</p>
                             </div>
                         </td>
-                        <td className='border border-slate-700'>0.5eth</td>
-                        <td className='border border-slate-700'>Created</td>
+                        <td className='p-3 text-sm text-gray-700'>0.5eth</td>
+                        <td className='p-3 text-sm text-gray-700'>Created</td>
                     </tr>
                 </tbody>
             </table>

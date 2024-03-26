@@ -7,6 +7,8 @@ import { Pacifico } from 'next/font/google'
 import Link from "next/link";
 import { IoMdHome } from "react-icons/io";
 import { usePathname } from 'next/navigation'
+import Logo from '../../public/metamask.svg'
+import Image from "next/image";
 
 const pacifico = Pacifico({
     weight: '400',
@@ -21,6 +23,7 @@ const Layout = ({
     children: React.ReactNode
   }) => {
     const pathname = usePathname()
+    const address = '0xA0Dc04E5F32a9637528b66c452A288747eeCAe69'
   return (
     <div className='flex'>
         <div className='bg-black flex-col  h-screen p-5 text-white'>
@@ -46,7 +49,15 @@ const Layout = ({
                 </li>
             </ul>
         </div>
-        <div className="w-full">{children}</div>
+        <div className="w-full ">
+          <div className="bg-black flex items-center p-4 gap-2 flex-row-reverse">
+            <div className="text-green-600 border border-white p-2 rounded flex relative">
+              {/* <Image src={Logo} alt="Metamask" fill={true} className=""	style={{objectFit: "contain",left:0,justifyContent:'space-between'}}/> */}
+              <p>{`${address.slice(0,4)}...${address.slice(35)}`}</p>
+            </div>
+            <div className="text-white border border-green-600 p-2 rounded">Ethereum</div>
+          </div>
+          {children}</div>
     </div>
   )
 }
