@@ -1,7 +1,8 @@
 "use client"
-import React from 'react';
+import React, {useState} from 'react';
 import { IoPersonCircle } from "react-icons/io5";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import Link from 'next/link';
 
 type LendCardProps = {
     address:string,
@@ -9,10 +10,11 @@ type LendCardProps = {
     
 };
 
+
 const LendCard:React.FC<LendCardProps> = ({address,duration}) => {
-    
+    const [loanCardOpen,setLoanCardOpen] = useState(false);
     return (
-        <div className='bg-white rounded py-6 pl-2'>
+        <div className='bg-gray-200 rounded py-6 pl-2'>
             <div className='flex items-center justify-between px-4  relative'>
             
               <div className='flex items-center gap-4 mb-5'>
@@ -20,7 +22,7 @@ const LendCard:React.FC<LendCardProps> = ({address,duration}) => {
                 <h4 className='font-bold'>{address}</h4>
                 <p className='bg-gray-300 rounded-lg px-2 text-gray-500 text-sm'>{duration}</p>
               </div>
-              <BsThreeDotsVertical className='cursor-pointer absolute top-0 right-1 text-2xl'/>
+              <Link href={'/dashboard/lend/1'}><BsThreeDotsVertical className='cursor-pointer absolute top-0 right-1 text-2xl'/></Link>
             </div>
             <div className='grid grid-cols-3 gap-7 px-4'>
                 <div className='flex flex-col gap-1 justify-center'>

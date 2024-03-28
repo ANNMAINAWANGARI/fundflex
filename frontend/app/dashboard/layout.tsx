@@ -49,9 +49,9 @@ const Layout = ({
                 </li>
             </ul>
         </div>
-        <div className="w-full ">
-          <div className="bg-black flex items-center p-4 gap-2 flex-row-reverse">
-            <div className="text-green-600 border border-white p-2 rounded flex relative">
+        <div className="w-full overflow-y-scroll">
+          <div className="bg-black flex items-center p-4 gap-2 flex-row-reverse ">
+            <div className="text-green-600 border border-white p-2 rounded flex ">
               {/* <Image src={Logo} alt="Metamask" fill={true} className=""	style={{objectFit: "contain",left:0,justifyContent:'space-between'}}/> */}
               <p>{`${address.slice(0,4)}...${address.slice(35)}`}</p>
             </div>
