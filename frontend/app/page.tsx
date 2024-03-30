@@ -1,3 +1,4 @@
+'use client'
 import Image from "next/image";
 import { Pacifico } from 'next/font/google'
 import Link from "next/link";
@@ -11,11 +12,56 @@ import { CiCoinInsert } from "react-icons/ci";
 import { PiPercentFill } from "react-icons/pi";
 import Footer from "./components/Footer";
 
+import { CeramicClient } from '@ceramicnetwork/http-client';
+// import { EthereumAuthProvider,ConnectNetwork } from '@self.id/web';
+import { ethers,Provider } from 'ethers';
+import { DIDSession } from 'did-session'
+import type { AuthMethod } from '@didtools/cacao'
+import { ComposeClient } from '@composedb/client'
+import { EthereumWebAuth, getAccountId } from '@didtools/pkh-ethereum'
+
+
 const pacifico = Pacifico({
   weight: '400',
   subsets: ['latin'],
   display: 'swap',
 })
+
+const handleGetStarted = async()=>{
+  console.log('yea loading')
+  const ethProvider = window.ethereum;
+
+// Request access to the user's Ethereum accounts
+const addresses = await ethProvider.enable();
+
+// Get the account ID from the Ethereum provider and the user's first account
+const accountId = await getAccountId(ethProvider, addresses[0]);
+
+// Create an instance of EthereumWebAuth
+const authProvider = await EthereumWebAuth.getAuthMethod(ethProvider, accountId);
+
+const loadSession = async (): Promise<DIDSession> => {
+// Check if there's a stored session in localStorage
+const sessionStr = localStorage.getItem('didsession');
+let session;
+
+if (sessionStr) {
+  // If there's a stored session, load it from the string
+  session = await DIDSession.fromSession(sessionStr);
+}
+
+if (!session || (session.hasSession && session.isExpired)) {
+  // If there's no stored session or it has expired, create a new one
+  session = await DIDSession.authorize(ethProvider);
+  localStorage.setItem('didsession', session.serialize());
+}
+
+return session;
+};
+console.log()
+
+  
+}
 
 export default function Home() {
   return (
@@ -27,7 +73,7 @@ export default function Home() {
           <li className="underline decoration-green-600 decoration-2 "><Link href='/'>Home</Link></li>
           <li className="underline decoration-green-600 decoration-2 "><Link href='/dashboard'>Dashboard</Link></li>
         </ul>
-        <button className="border-4 rounded border-green-600 p-2">Connect Wallet</button>
+        <button className="border-4 rounded border-green-600 p-2" onClick={handleGetStarted}>Connect Wallet</button>
       </header>
       <div className="flex flex-col w-full items-center justify-center text-white">
         {/* <Image
