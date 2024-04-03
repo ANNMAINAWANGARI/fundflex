@@ -1,8 +1,7 @@
 'use client'
-import Image from "next/image";
+import React from 'react'
 import { Pacifico } from 'next/font/google'
 import Link from "next/link";
-import { FaGreaterThan } from "react-icons/fa6";
 import HomeCard from "./components/HomeCard";
 import { FaPerson } from "react-icons/fa6";
 import { FaGift } from "react-icons/fa";
@@ -11,16 +10,10 @@ import { FaHandHoldingUsd } from "react-icons/fa";
 import { CiCoinInsert } from "react-icons/ci";
 import { PiPercentFill } from "react-icons/pi";
 import Footer from "./components/Footer";
-
-import { CeramicClient } from '@ceramicnetwork/http-client';
-// import { EthereumAuthProvider,ConnectNetwork } from '@self.id/web';
-import { ethers,Provider } from 'ethers';
-import { DIDSession } from 'did-session'
-import type { AuthMethod } from '@didtools/cacao'
-import { ComposeClient } from '@composedb/client'
-import { EthereumWebAuth, getAccountId } from '@didtools/pkh-ethereum'
-import { useContext } from "react";
-import { CeramicContext } from "./context/CeramicContext";
+import { useContext, useEffect } from "react";import { CeramicContext } from "./context/CeramicContext";
+//import { connectToCeramic } from '@/utils/authUtils';
+import { usePathname } from 'next/navigation'
+import { useMyContext } from './context/CeramicContext';
 
 
 
@@ -30,54 +23,54 @@ const pacifico = Pacifico({
   display: 'swap',
 })
 
-// const handleGetStarted = async()=>{
-//   console.log('yea loading')
-//   const ethProvider = window.ethereum;
 
-// // Request access to the user's Ethereum accounts
-// const addresses = await ethProvider.enable();
-
-// // Get the account ID from the Ethereum provider and the user's first account
-// const accountId = await getAccountId(ethProvider, addresses[0]);
-
-// // Create an instance of EthereumWebAuth
-// const authProvider = await EthereumWebAuth.getAuthMethod(ethProvider, accountId);
-
-// const loadSession = async (): Promise<DIDSession> => {
-// // Check if there's a stored session in localStorage
-// const sessionStr = localStorage.getItem('didsession');
-// let session;
-
-// if (sessionStr) {
-//   // If there's a stored session, load it from the string
-//   session = await DIDSession.fromSession(sessionStr);
-// }
-
-// if (!session || (session.hasSession && session.isExpired)) {
-//   // If there's no stored session or it has expired, create a new one
-//   session = await DIDSession.authorize(ethProvider);
-//   localStorage.setItem('didsession', session.serialize());
-// }
-
-// return session;
-// };
-// console.log()
-
-  
-// }
 
 export default function Home() {
-  const { connectToCeramic} = useContext(CeramicContext) || {}
+  // const walletA=localStorage.getItem('walletAddress') as string;
+  const { connectToCeramic,loggedIn,walletAddress,disconnect} = useMyContext()
+  console.log('logged',loggedIn)
+  // const [loggedIn,setLoggedIn] = React.useState(false)
+  const [address,setAddress] =React.useState<string|null>(localStorage.getItem('walletAddress'))
+  const pathname = usePathname()
+  const handleLogin = async () => {
+    if(connectToCeramic){
+     await connectToCeramic()
+    }
+  };
+  const getAdd = async()=>{
+    if(walletAddress){
+      setAddress(walletAddress)
+    }
+  }
+  const logout =()=>{
+    if(disconnect){
+      disconnect()
+    }
+  }
+
+ 
+   useEffect(()=>{
+    getAdd()
+   },[walletAddress])
+
+  
   return (
     <>
     <section className="flex flex-col h-full pb-32 bg-black">
       <header className="flex justify-between items-center px-4 py-4  text-white mb-14">
         <p className={`${pacifico.className} text-green-600 text-2xl`}>FundFlex</p>
         <ul className="flex justify-between items-center gap-4">
-          <li className="underline decoration-green-600 decoration-2 "><Link href='/'>Home</Link></li>
-          <li className="underline decoration-green-600 decoration-2 "><Link href='/dashboard'>Dashboard</Link></li>
+          <li className= {` ${pathname === '/' ? 'underline decoration-green-600 decoration-2':''}`}><Link href='/'>Home</Link></li>
+          {loggedIn && <li className= ""><Link href='/dashboard'>Dashboard</Link></li>}
         </ul>
-        <button className="border-4 rounded border-green-600 p-2" onClick={connectToCeramic}>Connect Wallet</button>
+        {loggedIn ? (<div className='flex gap-2 items-center'>
+          <p className='border-4 rounded border-green-600 p-2'>{address && `${address.slice(0,4)}...${address.slice(35)}`}</p>
+          <button className="border-4 rounded bg-black text-green-600 p-2" onClick={logout}>Logout</button>
+          </div>):(
+          <button className="border-4 rounded border-green-600 p-2" onClick={handleLogin}>Connect Wallet</button>
+        )}
+        
+
       </header>
       <div className="flex flex-col w-full items-center justify-center text-white">
         {/* <Image

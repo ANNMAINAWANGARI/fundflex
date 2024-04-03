@@ -5,12 +5,11 @@ import { CiCoinInsert } from "react-icons/ci";
 import React from 'react';
 import { Pacifico } from 'next/font/google'
 import Link from "next/link";
-import { CiSearch } from "react-icons/ci";
 import { IoMdHome } from "react-icons/io";
 import { usePathname } from 'next/navigation'
-import Logo from '../../public/metamask.svg'
-import Image from "next/image";
-import { ChatProvider } from "../context/ChatContext";
+
+
+import { useMyContext } from "../context/CeramicContext";
 
 const pacifico = Pacifico({
     weight: '400',
@@ -25,9 +24,10 @@ const Layout = ({
     children: React.ReactNode
   }) => {
     const pathname = usePathname()
-    const address = '0xA0Dc04E5F32a9637528b66c452A288747eeCAe69'
+    const { connectToCeramic,loggedIn,walletAddress,disconnect} = useMyContext()
+    const address = walletAddress;
   return (
-    <ChatProvider>
+    
     <div className='flex'>
         <div className='bg-white lg:flex-col  lg:h-screen lg:pr-20 lg:p-7 text-white hidden lg:flex md:hidden'>
             <p className={`${pacifico.className} text-green-600 text-2xl mb-10`}>FundFlex</p>
@@ -46,14 +46,14 @@ const Layout = ({
                     <FaHandHoldingUsd className='text-2xl'/>
                     <Link href='/dashboard/borrow' className=''>Borrow</Link>
                 </li>
-                <li className={`flex gap-2 items-center ${pathname === '/dashboard/profile' ?'text-green-600 font-semibold':'text-black'}`}>
+                {/* <li className={`flex gap-2 items-center ${pathname === '/dashboard/profile' ?'text-green-600 font-semibold':'text-black'}`}>
                     <CgProfile className='text-2xl'/>
                     <Link href='/dashboard/profile' className=''>Profile</Link>
                 </li>
                 <li className={`flex gap-2 items-center ${pathname === '/dashboard/chat' ?'text-green-600 font-bold':'text-black'}`}>
                     <CgProfile className='text-2xl'/>
                     <Link href='/dashboard/chat' className=''>Chat</Link>
-                </li>
+                </li> */}
             </ul>
         </div>
         <div className="w-full overflow-y-scroll">
@@ -69,7 +69,7 @@ const Layout = ({
           {children}</div>
           
     </div>
-    </ChatProvider>
+    
   )
 }
 

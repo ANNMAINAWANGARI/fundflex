@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Roboto,Roboto_Mono,Inter, Pacifico } from 'next/font/google'
 import "./globals.css";
 import { CeramicProvider } from "./context/CeramicContext";
+import { ToastContainer } from 'react-toastify';
 
 const inter = Inter({ subsets: ["latin"] });
 const roboto = Roboto({
@@ -29,8 +30,11 @@ export default function RootLayout({
     <html lang="en">
        <CeramicProvider>
       <body className="bg-gray-200">
-        {children}</body>
+        {children}
+        </body>
+        
         </CeramicProvider>
+        
     </html>
   );
 }
