@@ -1,16 +1,16 @@
 ## FUNDFLEX
 
 ### HomePage
-![HomePage](/frontend/app/public/Homepage.png)
+![HomePage](/frontend/assets/Homepage.png)
 
 ### AuthenticationPage
-![AuthenticationPage](/frontend/app/public/HomeAuthentication.png)
+![AuthenticationPage](/frontend/assets/HomeAuthentication.png)
 
 ### LendingPage
-![LendingPage](/frontend/app/public/LendingPage2.png)
+![LendingPage](/frontend/assets/LendingPage2.png)
 
 ### BorrowPage
-![BorrowPage](/frontend/app/public/BorrowPage.png)
+![BorrowPage](/frontend/assets/BorrowPage.png)
 
 ## Tech Stack/ Tooling
 - Frontend : Next.js 14
