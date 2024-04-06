@@ -10,12 +10,11 @@ import { fromString } from "uint8arrays/from-string";
 
 const  SECRET_KEY = process.env.SECRET_KEY;
 
-export const GET = async(req: NextApiRequest,
-  res: NextApiResponse,)=>
+export const POST = async(req: NextApiRequest, res: NextApiResponse)=>
  {
 
   if (!SECRET_KEY) {
-    return res.json({
+    return Response.json({
       err: "Missing key",
     });
   }
@@ -33,12 +32,12 @@ export const GET = async(req: NextApiRequest,
         provider
       });
       await staticDid.authenticate();
-      return res.json({
+      return Response.json({
         did: staticDid.id,
       });
     }
   } catch (err) {
-    res.json({
+    return Response.json({
       err,
     });
   }

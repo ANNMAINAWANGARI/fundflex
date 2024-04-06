@@ -11,6 +11,7 @@ import { RuntimeCompositeDefinition } from "@composedb/types";
 import { DID, type DagJWS } from "dids";
 
 
+
 interface CeramicContextType {
   ceramic: CeramicClient | null|string;
   provider: ethers.Provider| null;
@@ -175,7 +176,7 @@ export const CeramicProvider = ({ children }: CeramicProviderProps) => {
 }
 const getDid = async () => {
   try {
-    const result = await fetch("/api/did", {
+    const result = await fetch("../api/did", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -186,15 +187,17 @@ const getDid = async () => {
       did: string;
     };
     const finalDid = (await result.json()) as returnType;
-    console.log(finalDid);
+    console.log(finalDid,'finallllllllldid');
     return finalDid.did;
   } catch (e) {
     console.log(e);
+    return e;
   }
 }
 
 const createEligibility = async (e: string) => {
   const did = await getDid();
+  console.log('didcreateeligibility()',did)
   const data = await compose.executeQuery<{
     node: {
       ethDenverAttendanceList: {
@@ -323,7 +326,7 @@ const issuePoint = async (value: number, context: string, event: EventString,ref
  
   
   const did = await getDid();
-  const result = await fetch("/api/issue", {
+  const result = await fetch("../api/issue", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -548,7 +551,7 @@ const createFinal = async (
 ): Promise<Event | undefined> => {
   setAttesting(true);
   const did = await getDid();
-  const result = await fetch("/api/final", {
+  const result = await fetch("../api/final", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -629,7 +632,7 @@ const createBadge = async () => {
     return;
   }
   setAttesting(true);
-  const result = await fetch("/api/create", {
+  const result = await fetch("../api/create", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

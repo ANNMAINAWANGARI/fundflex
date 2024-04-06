@@ -21,10 +21,9 @@
 ## Project Scripts
 
 In the project directory, you can run the following:
-### `cd frontend`
-### `npm install`
+### `cd frontend` &&  ### `npm install`
 
-In your .env.local file add SECRET_KEY="<did:privatekey>"
+In your .env.local file add SECRET_KEY="<did:privatekey-generator>"
 
 ### `npm run dev`
 
@@ -34,10 +33,13 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 The page will reload when you make changes.\
 You may also see any lint errors in the console.
 
-### `cd backend`
-### `npm install`
+### `cd backend` && ### `npm install`
 
 In your .env add PRIVATE_KEY =<walletprivatekey>
 
+Run composedb daemon on wsl2/linux
+Setup repo @ [https://github.com/ANNMAINAWANGARI/composedb_models](https://github.com/ANNMAINAWANGARI/composedb_models). Then
+
+### npx @ceramicnetwork/cli daemon
 
 

@@ -75,8 +75,8 @@ const BorrowCryptoModal:React.FC<BorrowCryptoModalProps> =  () => {
             //await eventPromise;
             localStorage.setItem('code','LoanCreated')
             
-            //await findEvent()
-            //await createClaim()
+            await findEvent()
+            await createClaim()
             console.log('Transaction mined in block:', res.blockNumber);
             console.log('tx',tx)
             setInterests('');
