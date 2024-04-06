@@ -43,7 +43,7 @@ contract EthereumLendingContract is Pausable,ReentrancyGuard {
 
     function lend(uint256 _loanId, uint256 _amount,address payable _recipient) external whenNotPaused nonReentrant{
       Loan storage loan = loans[_loanId];
-      if (!checkChainId()) revert("You are not connected to the Sepolia network");
+      if (!checkChainId()) revert("You are not connected to the Ethereum network");
       if (loan.loanId != _loanId) revert("Invalid loan ID");
       if (loan.repaid) revert("Loan has already been repaid");
       if (loan.amount != _amount) revert("Lend amount must match the loan amount");

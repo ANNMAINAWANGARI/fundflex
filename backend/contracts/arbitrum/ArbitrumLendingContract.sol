@@ -25,6 +25,7 @@ contract ArbitrumLendingContract is Pausable,ReentrancyGuard {
         bool repaid;
         uint256 collateralAmount;
         uint256 totalAmount;
+        Lender lender;
     }
     struct Borrower{
         address borrower_address;
@@ -33,7 +34,6 @@ contract ArbitrumLendingContract is Pausable,ReentrancyGuard {
     struct Lender{
         address lender_address;
         uint256 points;
-        Loan[] loan_type;
     }
     Loan[] public allloans;
     mapping(uint256 => Loan) public loans;
@@ -56,6 +56,8 @@ contract ArbitrumLendingContract is Pausable,ReentrancyGuard {
     event CollateralWithdrawn(uint256 indexed loanId, uint256 amount);
     event LoanRestructured(uint256 indexed loanId, uint256 newDuration);
     event LoanLiquidated(uint256 indexed loanId, uint256 collateralValue);
+    event FundsLent(address indexed lender, uint256 amount);
+    event TransferFailed(address indexed recipient, uint256 amount);
 
     modifier onlyBorrower(uint256 loanId) {
       require(msg.sender == loans[loanId].borrower.borrower_address, "Only the borrower can perform this action");
@@ -122,6 +124,10 @@ contract ArbitrumLendingContract is Pausable,ReentrancyGuard {
                 borrower_address:msg.sender,
                 points:0
             }),
+            lender:Lender({
+                lender_address:address(0),
+                points:0
+            }),
             status: LoanStatus.Open,
             amount: amount,
             interest: interest,
@@ -136,6 +142,10 @@ contract ArbitrumLendingContract is Pausable,ReentrancyGuard {
             loanId: loanCount,
             borrower: Borrower({
                 borrower_address:msg.sender,
+                points:0
+            }),
+            lender:Lender({
+                lender_address:address(0),
                 points:0
             }),
             status: LoanStatus.Open,
@@ -158,6 +168,36 @@ contract ArbitrumLendingContract is Pausable,ReentrancyGuard {
             requiredUsdcCollateral
         );
         
+        
+    }
+
+    function lend(uint256 _loanId, uint256 _amount,address payable _recipient) public payable whenNotPaused nonReentrant{
+      Loan storage loan = loans[_loanId];
+      if (!checkChainId()) revert("You are not connected to the Arbitrum Sepolia network");
+      if (loan.loanId != _loanId) revert("Invalid loan ID");
+      if (loan.repaid) revert("Loan has already been repaid");
+      if (loan.amount != _amount) revert("Lend amount must match the loan amount");
+      if (_amount > msg.sender.balance) revert("Insufficient balance");
+      
+
+        (bool success, ) = _recipient.call{value: _amount}("");
+        if (!success) revert("Loan lending Ether  failed");
+       
+        loan.lender.lender_address = msg.sender;
+        loan.status = LoanStatus.Funded;
+        emit FundsLent(msg.sender, _amount);
+    }
+    function repay(uint256 _loanId,uint256 _amount, address payable _recipient) public whenNotPaused() nonReentrant(){
+       Loan storage loan = loans[_loanId];
+      if (!checkChainId()) revert("You are not connected to the Arbitrum Sepolia network");
+      if (loan.loanId != _loanId) revert("Invalid loan ID");
+      if (loan.repaid) revert("Loan has already been repaid");
+      if (loan.totalAmount != _amount) revert("Lend amount must match the loan amount");
+      if (_amount > msg.sender.balance) revert("Insufficient balance");
+      (bool success, ) = _recipient.call{value: _amount}("");
+      if (!success) revert("Loan repaying Ether transfer failed");
+      loan.repaid = true;
+      loan.status = LoanStatus.Repayed;
     }
 
     function calculateCollateral(uint256 amount) public view returns (uint256){
@@ -194,7 +234,18 @@ contract ArbitrumLendingContract is Pausable,ReentrancyGuard {
        require(loan.loanId == loanId, "Invalid loan ID");
        require(block.timestamp >= loan.startTime + loan.duration, "Loan is not due yet");
        require(!loan.repaid, "Loan has already been repaid");
+
+       
        IERC20 token = IERC20(0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d);
+       uint256 collateralValue = loan.collateralAmount;
+       require(token.balanceOf(address(this)) >= collateralValue, "Insufficient contract balance");
+       bool success = token.transfer(msg.sender, collateralValue);
+       require(success, "Token transfer failed");
+       loan.repaid =true;
+       loan.status = LoanStatus.Defaulted;
+
+       emit LoanLiquidated(loanId, collateralValue);
+       
     }
     function getAllLoans() public view returns(Loan[] memory){
         return allloans;

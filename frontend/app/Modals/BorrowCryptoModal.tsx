@@ -19,12 +19,12 @@ const BorrowCryptoModal:React.FC<BorrowCryptoModalProps> =  () => {
     const [collateral, setCollateral] = React.useState('');
     const [amount, setAmount] = React.useState('');
     const [loading,setLoading] = React.useState(false)
-    const { connectToCeramic,loggedIn,walletAddress,disconnect, runner} = useMyContext()
+    const { connectToCeramic,loggedIn,walletAddress,disconnect, runner,createClaim,findEvent} = useMyContext()
     console.log('runner',runner)
     const usdcContractAddress = '0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d';
-    const LOANLENDING_CONTRACT_ADDRESS='0x42f09Dd91a4Fffd4407ee4dA01518dBdEcc6f337';
-    const provider = new ethers.BrowserProvider(window.ethereum);
+    const LOANLENDING_CONTRACT_ADDRESS='0x45569901ECaAa0427247A84507681794e2d8093C';
     
+
 
     const fetchRunner = async()=>{
         const ethProvider =await window.ethereum;
@@ -35,14 +35,23 @@ const BorrowCryptoModal:React.FC<BorrowCryptoModalProps> =  () => {
            console.log('no runner')
            
     }
-    
-    const getLoans = async()=>{
-        let run = await fetchRunner()
-        const contract = new ethers.Contract(LOANLENDING_CONTRACT_ADDRESS, abi, run)
-        const allloans = await contract.getAllLoans()
-            console.log('allloans',allloans)
-    }
-    getLoans()
+    useEffect(()=>{
+        const eventE = async()=>{
+           let run = await fetchRunner()
+           const contract = new ethers.Contract(LOANLENDING_CONTRACT_ADDRESS, abi, run)
+           console.log()
+            contract.on('LoanCreated',(loanCount,borrower,amount,loanInterest,loanDuration,loanCollateral)=>{
+                toast.success(`Loan has been created for amount: ${ethers.formatEther(amount)} ETH with interest ${loanInterest.toString()}% with a collateral deposit of ${ethers.formatUnits(loanCollateral,6)} USDC for a duration of ${loanDuration.toString()} days.`, {
+                    position: "top-left"
+                });
+         });
+         return ()=>{
+            contract.removeAllListeners()
+         }
+        }
+        eventE()
+        
+    },[])
     
     
     const createLoan = async (e: React.FormEvent<HTMLFormElement>)=>{
@@ -52,15 +61,22 @@ const BorrowCryptoModal:React.FC<BorrowCryptoModalProps> =  () => {
         try {
             setLoading(true)
             e.preventDefault()
-            const prize = ethers.parseUnits(amount.toString(), 'ether');
+            const prize = ethers.parseEther(amount);
             let requiredUsdcCollateral = await contract.calculateCollateral(prize);
             const allowance = await usdcContract.allowance(walletAddress, LOANLENDING_CONTRACT_ADDRESS);
             console.log('collateral',requiredUsdcCollateral,allowance,ethers.formatUnits(requiredUsdcCollateral, 6),ethers.formatUnits(allowance, 6))
             const approveTx = await usdcContract.approve(LOANLENDING_CONTRACT_ADDRESS,requiredUsdcCollateral);
             await approveTx.wait();
+            //const eventPromise = ContractEvents(contract);
+            
             const tx = await contract.createLoan(prize,interests,duration)
             console.log('Transaction sent:', tx.hash);
             const res = await  tx.wait(); 
+            //await eventPromise;
+            localStorage.setItem('code','LoanCreated')
+            
+            //await findEvent()
+            //await createClaim()
             console.log('Transaction mined in block:', res.blockNumber);
             console.log('tx',tx)
             setInterests('');
@@ -72,6 +88,7 @@ const BorrowCryptoModal:React.FC<BorrowCryptoModalProps> =  () => {
                 position: "top-right"
             });
         } catch (error) {
+            setLoading(false)
             console.error(error);
         }
     }
